@@ -1,0 +1,8 @@
+
+__pycache__/
+*.pyc
+.venv/
+.last_run_id
+*key*.json
+service_account*.json
+credentials*.json

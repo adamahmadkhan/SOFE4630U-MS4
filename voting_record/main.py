@@ -8,8 +8,8 @@ import sys;                             # fot exit function
 
 # Search the current directory for the JSON file (including the Google Pub/Sub credential) 
 # to set the GOOGLE_APPLICATION_CREDENTIALS environment variable.
-files=glob.glob("*.json")
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=files[0];
+if not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+    raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS must be configured")
 
 # Get the environment variables to set the crossponding variables
 postgres_host = os.environ["POSTGRES_HOST"];
@@ -21,7 +21,7 @@ debug=False;  # change to True for debugging
 if "Debug" in os.environ:  # or define it as an environment variable
     debug=True;
 if debug:
-    print(files[0]);
+    print(os.environ["GOOGLE_APPLICATION_CREDENTIALS"]);
     print(postgres_host);
     print(project_id);
     print(subscription_id);

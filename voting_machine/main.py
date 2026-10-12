@@ -14,7 +14,7 @@ if len(files)>0:
    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=files[0];
 
 #To do: Set the project ID, topic name and the subscription_id 
-project_id = ""
+project_id = "sofe4630u-ms1-509300"
 topic_name = "election"
 
 # let the user enter the election and machine IDs
@@ -83,7 +83,7 @@ def thread_function():
             return
     
 # Create and start the subscriber thread
-x = threading.Thread(target=thread_function)
+x = threading.Thread(target=thread_function, daemon=True)
 x.start()
 
 # the main thread

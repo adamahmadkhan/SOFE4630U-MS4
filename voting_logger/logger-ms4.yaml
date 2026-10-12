@@ -1,0 +1,75 @@
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logger-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: logger
+  template:
+    metadata:
+      labels:
+        app: logger
+    spec:
+      containers:
+        - image: northamerica-northeast2-docker.pkg.dev/sofe4630u-ms1-509300/sofe4630u/logger:v1
+          name: logger
+          volumeMounts:
+            - name: voting-credentials
+              mountPath: /var/secrets/google
+              readOnly: true
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/secrets/google/credentials.json
+            - name: Debug
+              value: "true"
+            - name: REDIS_HOST
+              value: redis
+            - name: GCP_PROJECT
+              value: sofe4630u-ms1-509300
+            - name: ELECTION_SUB_ID
+              value: election-submit-sub
+            - name: TOPIC_NAME
+              value: election
+      volumes:
+        - name: voting-credentials
+          secret:
+            secretName: voting-credentials
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: redis
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - image: redis:7.4-alpine
+          args: ["redis-server", "--requirepass", "election"]
+          name: redis
+          env:
+            - name: REDIS_PASSWORD
+              value: election
+          ports:
+            - containerPort: 6379
+              name: redis
+--- 
